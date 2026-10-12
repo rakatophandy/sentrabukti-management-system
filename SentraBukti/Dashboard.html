@@ -1,0 +1,329 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --primary: #4f46e5; --primary-dark: #4338ca; --bg: #f8fafc; --card-bg: #ffffff;
+      --text: #0f172a; --text-muted: #64748b; --border: #e2e8f0; --danger: #ef4444; --info: #3b82f6;
+    }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); }
+
+    /* ================= UI LOGIN ================= */
+    #loginSection {
+      display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px;
+    }
+    .login-card {
+      background: var(--card-bg); width: 100%; max-width: 380px; padding: 40px 30px;
+      border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+      text-align: center; animation: slideUp 0.4s ease;
+    }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .login-card h2 { margin-bottom: 8px; color: #1e293b; }
+    .login-card p { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; }
+    
+    .input-group { margin-bottom: 16px; text-align: left; }
+    .input-group label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 6px; color: #334155; }
+    .input-group input { 
+      width: 100%; padding: 12px 16px; border: 1px solid var(--border); border-radius: 8px; font-size: 15px; 
+      transition: 0.2s; background: #f9fafb; font-family: inherit;
+    }
+    .input-group input:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15); background: #fff; }
+    
+    .btn-login {
+      width: 100%; padding: 14px; background: var(--primary); color: white; border: none;
+      border-radius: 8px; font-size: 15px; font-weight: 600; cursor: pointer; margin-top: 10px; transition: 0.2s;
+    }
+    .btn-login:hover { background: var(--primary-dark); }
+    .btn-login:disabled { background: #94a3b8; cursor: not-allowed; }
+    #loginError { color: var(--danger); font-size: 13px; margin-top: 15px; font-weight: 500; display: none; }
+
+    /* ================= UI DASHBOARD ================= */
+    #dashboardSection { display: none; padding-bottom: 50px; }
+    .navbar { background: var(--card-bg); padding: 16px 32px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: center; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
+    .nav-brand { font-size: 20px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+    .nav-brand span { background: var(--primary); color: white; padding: 4px 8px; border-radius: 6px; font-size: 14px; }
+    .sync-status { font-size: 12px; color: var(--text-muted); display: flex; align-items: center; gap: 6px; }
+    .dot { height: 8px; width: 8px; background-color: #10b981; border-radius: 50%; }
+    
+    .main-container { max-width: 1100px; margin: 32px auto; padding: 0 20px; }
+    .breadcrumbs { margin-bottom: 24px; font-size: 14px; color: var(--text-muted); font-weight: 500; display:flex; justify-content: space-between;}
+    .breadcrumbs span { cursor: pointer; color: var(--primary); transition: 0.2s; }
+    .breadcrumbs span:hover { text-decoration: underline; }
+    .btn-logout { background: transparent; border: 1px solid var(--danger); color: var(--danger); padding: 4px 10px; border-radius: 6px; font-size: 12px; cursor: pointer; }
+    .btn-logout:hover { background: var(--danger); color: white; }
+
+    .folder-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 24px; }
+    .folder-card { background: var(--card-bg); border-radius: 16px; padding: 24px; cursor: pointer; border: 1px solid var(--border); border-top: 5px solid var(--primary); transition: all 0.3s; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+    .folder-card:hover { transform: translateY(-6px); box-shadow: 0 12px 20px -5px rgba(0,0,0,0.1); border-color: transparent; }
+    .folder-icon { font-size: 42px; margin-bottom: 12px; }
+    .folder-info h3 { font-size: 18px; font-weight: 600; margin-bottom: 4px; color: #1e293b; }
+    .folder-info p { font-size: 13px; color: var(--text-muted); }
+    
+    .table-container { background: var(--card-bg); border-radius: 12px; border: 1px solid var(--border); overflow: hidden; box-shadow: 0 4px 6px -1px rgba(0,0,0,0.05); }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { padding: 16px 24px; text-align: left; border-bottom: 1px solid var(--border); }
+    th { background-color: #f8fafc; font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; }
+    td { font-size: 14px; font-weight: 500; color: #334155; }
+    tr:hover { background-color: #f1f5f9; }
+    .date-badge { background: #f1f5f9; color: #475569; padding: 4px 10px; border-radius: 20px; font-size: 12px; font-weight: 600; }
+    .action-group { display: flex; gap: 8px; }
+    .btn { padding: 6px 12px; border-radius: 6px; font-size: 13px; font-weight: 600; border: none; cursor: pointer; text-decoration: none; }
+    .btn-view { background-color: #eff6ff; color: var(--info); }
+    .btn-delete { background-color: #fef2f2; color: var(--danger); }
+    
+    #loadingScreen { display: flex; flex-direction: column; justify-content: center; align-items: center; height: 50vh; color: var(--text-muted); }
+    .loader-ring { width: 40px; height: 40px; border: 4px solid #e2e8f0; border-top: 4px solid var(--primary); border-radius: 50%; animation: spin 1s linear infinite; margin-bottom: 16px; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    
+    #toast { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 8px; padding: 16px; position: fixed; z-index: 999; left: 50%; bottom: 30px; transform: translateX(-50%); font-size: 14px; font-weight: 500; }
+    #toast.show { visibility: visible; animation: fadeinToast 0.5s, fadeoutToast 0.5s 2.5s; }
+    @keyframes fadeinToast { from { bottom: 0; opacity: 0; } to { bottom: 30px; opacity: 1; } }
+    @keyframes fadeoutToast { from { bottom: 30px; opacity: 1; } to { bottom: 0; opacity: 0; } }
+  </style>
+</head>
+<body>
+
+  <!-- ================= LAYAR LOGIN ================= -->
+  <div id="loginSection">
+    <div class="login-card">
+      <h2>Admin Panel</h2>
+      <p>Masuk untuk memonitor foto toko</p>
+      
+      <div class="input-group">
+        <label>Username</label>
+        <input type="text" id="username" placeholder="Masukkan username" autocomplete="off">
+      </div>
+      <div class="input-group">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="••••••••">
+      </div>
+      
+      <button class="btn-login" id="btnProsesLogin" onclick="prosesLogin()">Masuk Dashboard</button>
+      <div id="loginError">Username atau Password salah!</div>
+    </div>
+  </div>
+
+  <!-- ================= LAYAR DASHBOARD ================= -->
+  <div id="dashboardSection">
+    <div class="navbar">
+      <div class="nav-brand">Monitoring App <span>Admin</span></div>
+      <div class="sync-status">
+        <div class="dot" id="syncDot"></div>
+        <span id="status-update">Memuat sistem...</span>
+      </div>
+    </div>
+
+    <div class="main-container">
+      <div id="loadingScreen">
+        <div class="loader-ring"></div>
+        <h3>Membuka brankas data...</h3>
+      </div>
+      <div id="containerData" style="display: none;"></div>
+    </div>
+  </div>
+
+  <div id="toast">Notifikasi</div>
+
+  <script>
+    let dataGlobal = [];
+    let tampilanSekarang = 'home';
+    let intervalSync; 
+
+    window.onload = function() {
+      let token = sessionStorage.getItem('token_admin_toko');
+      if (token) {
+        masukKeDashboard(token);
+      }
+    };
+
+    function prosesLogin() {
+      let user = document.getElementById('username').value;
+      let pass = document.getElementById('password').value;
+      let btn = document.getElementById('btnProsesLogin');
+      let err = document.getElementById('loginError');
+      
+      if(!user || !pass) return;
+
+      btn.innerText = "Memverifikasi...";
+      btn.disabled = true;
+      err.style.display = "none";
+
+      google.script.run
+        .withSuccessHandler(function(tokenDariServer) {
+          sessionStorage.setItem('token_admin_toko', tokenDariServer);
+          masukKeDashboard(tokenDariServer);
+        })
+        .withFailureHandler(function(error) {
+          btn.innerText = "Masuk Dashboard";
+          btn.disabled = false;
+          err.innerText = error.message;
+          err.style.display = "block";
+        })
+        .verifikasiLogin(user, pass);
+    }
+
+    function masukKeDashboard(token) {
+      document.getElementById('loginSection').style.display = 'none';
+      document.getElementById('dashboardSection').style.display = 'block';
+      document.title = "Dashboard Area";
+      
+      muatData(true, token);
+      intervalSync = setInterval(function() { muatData(false, token); }, 15000); 
+    }
+
+    function prosesLogout() {
+      sessionStorage.removeItem('token_admin_toko');
+      clearInterval(intervalSync);
+      window.location.reload(); 
+    }
+
+    function showToast(message, color = '#333') {
+      var x = document.getElementById("toast");
+      x.innerText = message; x.style.backgroundColor = color; x.className = "show";
+      setTimeout(function(){ x.className = x.className.replace("show", ""); }, 3000);
+    }
+
+    function muatData(isFirstLoad, token) {
+      if(!isFirstLoad) document.getElementById('status-update').innerText = "Menyinkronkan...";
+
+      google.script.run
+        .withSuccessHandler(function(data) {
+          dataGlobal = data; 
+          renderTampilan(); 
+          
+          var waktu = new Date().toLocaleTimeString('id-ID', {hour: '2-digit', minute:'2-digit'});
+          document.getElementById('status-update').innerText = "Sinkron pada " + waktu;
+          document.getElementById('syncDot').style.backgroundColor = "#10b981"; 
+          
+          if (isFirstLoad) {
+            document.getElementById('loadingScreen').style.display = 'none';
+            document.getElementById('containerData').style.display = 'block';
+          }
+        })
+        .withFailureHandler(function(error) {
+          if (error.message === "Akses Ilegal Terdeteksi!") {
+             alert("Sesi berakhir, silakan login kembali.");
+             prosesLogout();
+          } else {
+            document.getElementById('status-update').innerText = "Offline / Gagal sinkron";
+            document.getElementById('syncDot').style.backgroundColor = "#ef4444"; 
+            if(isFirstLoad) {
+              document.getElementById('loadingScreen').innerHTML = `<h3 style="color:var(--danger)">Gagal: ${error.message}</h3><p>Cek ID Folder di Code.gs</p>`;
+            }
+          }
+        })
+        .getDaftarFile(token); 
+    }
+
+    function renderTampilan() {
+      var container = document.getElementById('containerData');
+      if(dataGlobal.length === 0) {
+        container.innerHTML = `
+          <div class="breadcrumbs">
+            <div>Dasbor Utama / <strong>Daftar Divisi</strong></div>
+            <button class="btn-logout" onclick="prosesLogout()">Keluar (Logout)</button>
+          </div>
+          <div style="text-align:center; padding:50px; color:var(--text-muted);"><h3>Belum ada file yang diunggah.</h3></div>`;
+        return;
+      }
+
+      var dataPerDivisi = {};
+      dataGlobal.forEach(function(item) {
+        if (!dataPerDivisi[item.divisi]) dataPerDivisi[item.divisi] = [];
+        dataPerDivisi[item.divisi].push(item);
+      });
+
+      if (tampilanSekarang === 'home') {
+        let html = `
+          <div class="breadcrumbs">
+            <div>Dasbor Utama / <strong>Daftar Divisi</strong></div>
+            <button class="btn-logout" onclick="prosesLogout()">Keluar (Logout)</button>
+          </div>
+          <div class="folder-grid">`;
+        
+        let daftarDivisi = Object.keys(dataPerDivisi).sort();
+        daftarDivisi.forEach(function(divisi) {
+          html += `
+            <div class="folder-card" onclick="bukaFolder('${divisi}')">
+              <div class="folder-icon">📂</div>
+              <div class="folder-info">
+                <h3>${divisi}</h3>
+                <p>${dataPerDivisi[divisi].length} Dokumen / Foto</p>
+              </div>
+            </div>`;
+        });
+        html += '</div>';
+        container.innerHTML = html;
+      } 
+      else {
+        let fileDivisi = dataPerDivisi[tampilanSekarang] || []; 
+        let html = `
+          <div class="breadcrumbs">
+            <div><span onclick="kembaliHome()">Dasbor Utama</span> / <strong>Divisi ${tampilanSekarang}</strong></div>
+            <button class="btn-logout" onclick="prosesLogout()">Keluar (Logout)</button>
+          </div>`;
+        
+        if (fileDivisi.length === 0) {
+           html += '<p>Folder ini kosong.</p>';
+        } else {
+          html += '<div class="table-container"><table>';
+          html += '<thead><tr><th>Detail File & Toko</th><th>Pengunggah</th><th>Tgl Transfer</th><th>Waktu Upload</th><th width="150">Aksi</th></tr></thead>';
+          html += '<tbody>';
+          
+          fileDivisi.forEach(function(item) {
+            let namaTanpaEkstensi = item.nama.replace(/\.[^/.]+$/, "");
+
+            html += `
+              <tr>
+                <td><div style="font-weight:600; color:#1e293b;">${namaTanpaEkstensi}</div></td>
+                <td>
+                  <span class="date-badge" style="background:#fce7f3; color:#9d174d;">
+                    👤 ${item.userNik}
+                  </span>
+                </td>
+                <td>
+                  <span class="date-badge" style="background:#e0e7ff; color:#3730a3;">
+                    ${item.tanggalTransfer}
+                  </span>
+                </td>
+                <td><span class="date-badge">${item.tanggal}</span></td>
+                <td>
+                  <div class="action-group">
+                    <a href="${item.url}" target="_blank" class="btn btn-view">Buka</a>
+                    <button class="btn btn-delete" onclick="konfirmasiHapus('${item.id}', '${item.nama}')">Hapus</button>
+                  </div>
+                </td>
+              </tr>`;
+          });
+          html += '</tbody></table></div>';
+        }
+        container.innerHTML = html;
+      }
+    }
+
+    function bukaFolder(nama) { tampilanSekarang = nama; renderTampilan(); }
+    function kembaliHome() { tampilanSekarang = 'home'; renderTampilan(); }
+
+    function konfirmasiHapus(id, namaFile) {
+      if(confirm(`Yakin ingin memindahkan '${namaFile}' ke tempat sampah?`)) {
+        showToast("Sedang menghapus...", "#3b82f6");
+        let token = sessionStorage.getItem('token_admin_toko');
+        
+        google.script.run
+          .withSuccessHandler(function(){
+            showToast("✅ File dihapus", "#10b981");
+            muatData(false, token); 
+          })
+          .withFailureHandler(function(error) {
+            showToast("❌ Gagal: " + error.message, "#ef4444");
+          })
+          .hapusFile(id, token);
+      }
+    }
+  </script>
+</body>
+</html>

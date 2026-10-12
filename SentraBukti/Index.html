@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <base target="_top">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+  <style>
+    /* ... (CSS tidak berubah, memangkas spasi agar hemat) ... */
+    :root { --primary: #4f46e5; --primary-hover: #4338ca; --bg: #f3f4f6; --card-bg: #ffffff; --text: #1f2937; --text-muted: #6b7280; --border: #e5e7eb; }
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body { font-family: 'Inter', sans-serif; background-color: var(--bg); color: var(--text); display: flex; justify-content: center; align-items: center; min-height: 100vh; padding: 20px; }
+    .card { background: var(--card-bg); width: 100%; max-width: 420px; padding: 32px; border-radius: 16px; box-shadow: 0 10px 25px -5px rgba(0,0,0,0.1); animation: slideUp 0.5s ease-out; }
+    @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+    .header { text-align: center; margin-bottom: 24px; }
+    .header h2 { font-size: 24px; font-weight: 600; color: #111827; margin-bottom: 8px; }
+    .header p { font-size: 14px; color: var(--text-muted); }
+    .form-group { margin-bottom: 20px; }
+    .form-group label { display: block; font-size: 14px; font-weight: 500; margin-bottom: 8px; }
+    input[type="text"], input[type="date"], select { width: 100%; padding: 12px 16px; border: 1px solid var(--border); border-radius: 8px; font-size: 15px; font-family: inherit; transition: 0.2s; background-color: #f9fafb; }
+    input[type="text"]:focus, input[type="date"]:focus, select:focus { outline: none; border-color: var(--primary); box-shadow: 0 0 0 3px rgba(79, 70, 229, 0.15); background-color: #fff; }
+    .file-drop-area { position: relative; display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; height: 120px; border: 2px dashed #cbd5e1; border-radius: 12px; background-color: #f8fafc; transition: 0.3s; cursor: pointer; }
+    .file-drop-area:hover { border-color: var(--primary); background-color: #eff6ff; }
+    .file-drop-area span { font-size: 14px; color: var(--text-muted); margin-top: 8px; font-weight: 500; }
+    .file-drop-area svg { width: 32px; height: 32px; fill: #94a3b8; transition: fill 0.3s ease; }
+    .file-drop-area:hover svg { fill: var(--primary); }
+    input[type="file"] { position: absolute; width: 100%; height: 100%; top: 0; left: 0; opacity: 0; cursor: pointer; }
+    #fileName { font-size: 13px; color: var(--primary); font-weight: 600; margin-top: 8px; text-align: center; }
+    button { width: 100%; padding: 14px; background-color: var(--primary); color: white; border: none; border-radius: 8px; font-size: 16px; font-weight: 600; cursor: pointer; transition: 0.2s; display: flex; justify-content: center; align-items: center; }
+    button:hover { background-color: var(--primary-hover); }
+    button:disabled { background-color: #9ca3af; cursor: not-allowed; }
+    .spinner { border: 3px solid rgba(255,255,255,0.3); border-radius: 50%; border-top: 3px solid white; width: 20px; height: 20px; animation: spin 1s linear infinite; display: none; margin-right: 10px; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    #status-toast { display: none; padding: 12px; border-radius: 8px; margin-top: 16px; text-align: center; font-size: 14px; font-weight: 500; animation: slideUp 0.3s; }
+    .toast-success { background-color: #d1fae5; color: #065f46; border: 1px solid #10b981; }
+    .toast-error { background-color: #fee2e2; color: #991b1b; border: 1px solid #ef4444; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="header">
+      <h2>Upload Foto Toko</h2>
+      <p>Lengkapi data dan unggah foto terbaru</p>
+    </div>
+    
+    <!-- FIELD BARU: User & NIK -->
+    <div class="form-group">
+      <label for="userNik">Pengunggah (User & NIK)</label>
+      <select id="userNik" required>
+        <option value="" disabled selected>-- Pilih Nama Anda --</option>
+        <option value="90250020 - Fatimah Husni">90250020 - Fatimah Husni</option>
+        <option value="90250022 - Erizal">90250022 - Erizal</option>
+        <option value="90250023 - Rudi">90250023 - Rudi</option>
+        <option value="90250025 - Adrial, Amd">90250025 - Adrial, Amd</option>
+        <option value="90250026 - Delfi">90250026 - Delfi</option>
+        <option value="90250030 - Deden Saputra Utama">90250030 - Deden Saputra Utama</option>
+        <option value="90250037 - Rizky Septiendi">90250037 - Rizky Septiendi</option>
+        <option value="90250039 - Tintus Arvinol">90250039 - Tintus Arvinol</option>
+        <option value="90250040 - Irka Febri Kasmanto">90250040 - Irka Febri Kasmanto</option>
+        <option value="90250107 - MUHAMMAD HABIBULLAH">90250107 - MUHAMMAD HABIBULLAH</option>
+        <option value="90250132 - RIZKI ILLAHI">90250132 - RIZKI ILLAHI</option>
+        <option value="90250166 - FAUZIL ARSYAD">90250166 - FAUZIL ARSYAD</option>
+        <option value="90250167 - DENI AKBAR PUTRA">90250167 - DENI AKBAR PUTRA</option>
+        <option value="90250187 - AFDHAL ZIKRI">90250187 - AFDHAL ZIKRI</option>
+        <option value="90250212 - DWIKI KURNIAWAN">90250212 - DWIKI KURNIAWAN</option>
+        <option value="90250260 - Anisa Putri">90250260 - Anisa Putri</option>
+        <option value="90250271 - RIZKY FATHURRACHMAN">90250271 - RIZKY FATHURRACHMAN</option>
+        <option value="90250298 - HERI HERMAWAN">90250298 - HERI HERMAWAN</option>
+        <option value="90250301 - MUHAMMAD RIDHA">90250301 - MUHAMMAD RIDHA</option>
+        <option value="90250310 - YULIF RINALDI">90250310 - YULIF RINALDI</option>
+        <option value="90250322 - WERI IRAWAN">90250322 - WERI IRAWAN</option>
+        <option value="90250331 - RESTU DWI PUTRA">90250331 - RESTU DWI PUTRA</option>
+        <option value="90250340 - Jaemmy Alekta Arnoel">90250340 - Jaemmy Alekta Arnoel</option>
+        <option value="90250342 - ADRIAN RIVALDO">90250342 - ADRIAN RIVALDO</option>
+        <option value="90250348 - Yudha Wahyu Alkara">90250348 - Yudha Wahyu Alkara</option>
+        <option value="90250374 - Riski Firma Putra">90250374 - Riski Firma Putra</option>
+        <option value="90250378 - Syafri Nanda">90250378 - Syafri Nanda</option>
+        <option value="90250379 - Andi Kurniyawan">90250379 - Andi Kurniyawan</option>
+        <option value="90250389 - Aulia Rusdi">90250389 - Aulia Rusdi</option>
+        <option value="90250396 - Muhammad Dio Muhajir">90250396 - Muhammad Dio Muhajir</option>
+        <option value="90250406 - Saddam Febrian">90250406 - Saddam Febrian</option>
+        <option value="90250407 - Wahyuldi Putra">90250407 - Wahyuldi Putra</option>
+        <option value="90250455 - Ryvo Ardiansyah">90250455 - Ryvo Ardiansyah</option>
+        <option value="90250460 - Haris Luthfi">90250460 - Haris Luthfi</option>
+        <option value="90250463 - Kambarudin">90250463 - Kambarudin</option>
+        <option value="90250468 - Muhammad Ansyari Surya">90250468 - Muhammad Ansyari Surya</option>
+        <option value="90250470 - Randi Saputra">90250470 - Randi Saputra</option>
+        <option value="90250473 - Heru Aulia">90250473 - Heru Aulia</option>
+        <option value="90250476 - Rizki Ananda Afanti">90250476 - Rizki Ananda Afanti</option>
+        <option value="90250487 - Arief Nugraha">90250487 - Arief Nugraha</option>
+        <option value="90250488 -	Hanif Kurniawan">90250488 -	Hanif Kurniawan</option>
+        <option value="990250490 - Restu Eli Waruwu">990250490 - Restu Eli Waruwu</option>
+        <option value="TRANSPORT FROZEN">TRANSPORT FROZEN</option>
+        <option value="TRANSPORT">TRANSPORT</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <label for="namaToko">Nama Toko</label>
+      <input type="text" id="namaToko" placeholder="No Customer - Nama Toko" autocomplete="off" required>
+    </div>
+
+    <div class="form-group">
+      <label for="tanggalTransfer">Tanggal Transfer</label>
+      <input type="date" id="tanggalTransfer" required>
+    </div>
+    
+    <div class="form-group">
+      <label for="divisi">Divisi</label>
+      <select id="divisi">
+        <option value="Sales">💼 Sales</option>
+        <option value="Transport">🚚 Transport</option>
+        <option value="Frozen">❄️ Frozen</option>
+      </select>
+    </div>
+    
+    <div class="form-group">
+      <label>Foto Toko</label>
+      <div class="file-drop-area" id="dropArea">
+        <svg viewBox="0 0 24 24"><path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.36 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/></svg>
+        <span id="labelUpload">Klik atau Seret foto ke sini</span>
+        <input type="file" id="fotoUpload" accept="image/*" required>
+      </div>
+      <div id="fileName"></div>
+    </div>
+    
+    <button id="btnSubmit" onclick="kirimData()">
+      <div class="spinner" id="spinner"></div>
+      <span id="btnText">Upload Sekarang</span>
+    </button>
+    <div id="status-toast"></div>
+  </div>
+
+  <script>
+    document.getElementById('fotoUpload').addEventListener('change', function(e) {
+      var fileName = e.target.files[0] ? e.target.files[0].name : '';
+      document.getElementById('fileName').innerText = fileName ? "Terpilih: " + fileName : '';
+      if(fileName) document.getElementById('labelUpload').innerText = "Ganti foto";
+    });
+
+    function showToast(message, isSuccess) {
+      var toast = document.getElementById('status-toast');
+      toast.innerText = message; toast.className = isSuccess ? 'toast-success' : 'toast-error';
+      toast.style.display = 'block'; setTimeout(() => { toast.style.display = 'none'; }, 5000);
+    }
+
+    function kirimData() {
+      var file = document.getElementById('fotoUpload').files[0];
+      var userNik = document.getElementById('userNik').value; // Mengambil value NIK
+      var namaToko = document.getElementById('namaToko').value.trim();
+      var rawDate = document.getElementById('tanggalTransfer').value;
+      var divisi = document.getElementById('divisi').value;
+      
+      if(!file || !namaToko || !rawDate || !userNik) {
+        showToast("⚠️ Semua kolom wajib diisi!", false);
+        return;
+      }
+
+      var p = rawDate.split('-');
+      var tanggalFormat = p[2] + "/" + p[1] + "/" + p[0];
+
+      document.getElementById('btnText').innerText = "Mengupload...";
+      document.getElementById('spinner').style.display = "block";
+      document.getElementById('btnSubmit').disabled = true;
+      document.getElementById('status-toast').style.display = "none";
+
+      var reader = new FileReader();
+      reader.onload = function(e) {
+        var base64 = e.target.result.split(',')[1];
+        var dataForm = { 
+          namaToko: namaToko, 
+          divisi: divisi, 
+          tanggalTransfer: tanggalFormat, 
+          userNik: userNik, // Mengirim User NIK ke backend
+          namaFile: file.name, 
+          tipe: file.type, 
+          base64: base64 
+        };
+
+        google.script.run
+          .withSuccessHandler(function(pesan){
+            showToast("✅ " + pesan, true); resetForm();
+          })
+          .withFailureHandler(function(error){
+            showToast("❌ Gagal: " + error.message, false); resetForm(true);
+          })
+          .prosesUpload(dataForm);
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function resetForm(onlyLoading = false) {
+      document.getElementById('btnText').innerText = "Upload Sekarang";
+      document.getElementById('spinner').style.display = "none";
+      document.getElementById('btnSubmit').disabled = false;
+      
+      if(!onlyLoading) {
+        document.getElementById('namaToko').value = "";
+        document.getElementById('tanggalTransfer').value = "";
+        document.getElementById('userNik').value = ""; // Reset dropdown
+        document.getElementById('fotoUpload').value = "";
+        document.getElementById('fileName').innerText = "";
+        document.getElementById('labelUpload').innerText = "Klik atau Seret foto ke sini";
+      }
+    }
+  </script>
+</body>
+</html>
